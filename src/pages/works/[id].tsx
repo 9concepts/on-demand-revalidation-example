@@ -52,12 +52,24 @@ export default function Work(
   const router = useRouter();
   const { pathname, asPath } = router;
 
+  const [startedAt, setStartedAt] = useState(getStaticPropsStartedAt);
+  const [finishedAt, setFinishedAt] = useState(getStaticPropsFinishedAt);
+
   useEffect(() => {
     setCurrentAt(now());
     const timeoutId = setTimeout(() => setCurrentAt(now()), 1000);
 
     return () => clearTimeout(timeoutId);
   }, [currentAt, setCurrentAt]);
+
+  useEffect(() => {
+    setStartedAt(
+      dayjs(getStaticPropsStartedAt).format("YYYY-MM-DD HH:mm:ss (ZZ)"),
+    );
+    setFinishedAt(
+      dayjs(getStaticPropsFinishedAt).format("YYYY-MM-DD HH:mm:ss (ZZ)"),
+    );
+  }, [getStaticPropsStartedAt, getStaticPropsFinishedAt]);
 
   const handleClick = async () => {
     console.log("revalidate button clicked at", now());
@@ -111,7 +123,7 @@ export default function Work(
         <div>
           Build started at
         </div>
-        <div>{getStaticPropsStartedAt}</div>
+        <div>{startedAt}</div>
         <div>
           Build stopped for
         </div>
@@ -119,7 +131,7 @@ export default function Work(
         <div>
           Build finished at
         </div>
-        <div>{getStaticPropsFinishedAt}</div>
+        <div>{finishedAt}</div>
         {currentAt && (
           <>
             <div>
