@@ -4,7 +4,7 @@ import { GetStaticPaths, GetStaticProps } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
-const now = () => dayjs().format("YYYY-MM-DD HH:mm:ss (ZZ)");
+const format = (timestamp: number) => dayjs(timestamp).format("HH:mm:ss (ZZ)");
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -18,12 +18,12 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 type Props = {
   id: string;
-  getStaticPropsStartedAt: string;
-  getStaticPropsFinishedAt: string;
+  getStaticPropsStartedAt: number;
+  getStaticPropsFinishedAt: number;
 };
 
 export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
-  const getStaticPropsStartedAt = now();
+  const getStaticPropsStartedAt = Date.now();
   const id = params?.id;
 
   if (typeof id !== "string" || !WORK_IDS.includes(id)) {
@@ -38,7 +38,7 @@ export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
     props: {
       id,
       getStaticPropsStartedAt,
-      getStaticPropsFinishedAt: now(),
+      getStaticPropsFinishedAt: Date.now(),
     },
     revalidate: false,
   };
@@ -52,27 +52,27 @@ export default function Work(
   const router = useRouter();
   const { pathname, asPath } = router;
 
-  const [startedAt, setStartedAt] = useState(getStaticPropsStartedAt);
-  const [finishedAt, setFinishedAt] = useState(getStaticPropsFinishedAt);
+  const [startedAt, setStartedAt] = useState("");
+  const [finishedAt, setFinishedAt] = useState("");
 
   useEffect(() => {
-    setCurrentAt(now());
-    const timeoutId = setTimeout(() => setCurrentAt(now()), 1000);
+    setCurrentAt(format(Date.now()));
+    const timeoutId = setTimeout(() => setCurrentAt(format(Date.now())), 1000);
 
     return () => clearTimeout(timeoutId);
   }, [currentAt, setCurrentAt]);
 
   useEffect(() => {
     setStartedAt(
-      dayjs(getStaticPropsStartedAt).format("YYYY-MM-DD HH:mm:ss (ZZ)"),
+      format(getStaticPropsStartedAt),
     );
     setFinishedAt(
-      dayjs(getStaticPropsFinishedAt).format("YYYY-MM-DD HH:mm:ss (ZZ)"),
+      format(getStaticPropsFinishedAt),
     );
   }, [getStaticPropsStartedAt, getStaticPropsFinishedAt]);
 
   const handleClick = async () => {
-    console.log("revalidate button clicked at", now());
+    console.log("revalidate button clicked at", format(Date.now()));
     setIsRevalidating(true);
     const res = await fetch(
       "/api/revalidate",
