@@ -15,23 +15,13 @@ export default function Home() {
 
       <div>
         <div>
-          Author:{" "}
-          <a
-            className="underline"
-            href="https://github.com/9sako6"
-            target="_blank"
-          >
-            9sako6
-          </a>
-        </div>
-        <div>
           GitHub:{" "}
           <a
             className="underline"
-            href="https://github.com/9concepts/on-demand-revalidation-example"
+            href="https://github.com/9sako6/on-demand-revalidation-example"
             target="_blank"
           >
-            9concepts/on-demand-revalidation-example
+            9sako6/on-demand-revalidation-example
           </a>
         </div>
       </div>
