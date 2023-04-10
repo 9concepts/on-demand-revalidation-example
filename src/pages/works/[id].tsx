@@ -1,6 +1,7 @@
 import { SLEEP_TIME, WORK_IDS } from "@/const";
 import dayjs from "dayjs";
 import { GetStaticPaths, GetStaticProps } from "next";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 const now = () => dayjs().format("YYYY-MM-DD HH:mm:ss (ZZ)");
@@ -46,6 +47,8 @@ export default function Work(
   { id, getStaticPropsStartedAt, getStaticPropsFinishedAt }: Props,
 ) {
   const [currentAt, setCurrentAt] = useState<string>();
+  const [isRevalidating, setIsRevalidating] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     setCurrentAt(now());
@@ -54,28 +57,64 @@ export default function Work(
     return () => clearTimeout(timeoutId);
   }, [currentAt, setCurrentAt]);
 
+  const handleClick = async () => {
+    setIsRevalidating(true);
+    const res = await fetch(
+      "/api/revalidate",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          id,
+          secret: process.env.NEXT_PUBLIC_REVALIDATE_SECRET_TOKEN,
+        }),
+      },
+    ).finally(() => setIsRevalidating(false));
+
+    console.log("status of the revalidate request: ", res.status);
+
+    if (res.ok) {
+      router.reload();
+    }
+  };
+
   return (
     <div className="border">
-      <h1>Work#{id}</h1>
+      <div className="flex justify-between items-center pb-1">
+        <h1>Work#{id}</h1>
+        {isRevalidating
+          ? (
+            <div className="bg-purple-500 text-white py-1 px-2">
+              revalidating...
+            </div>
+          )
+          : (
+            <button
+              className="bg-purple-500 hover:bg-purple-700 text-white py-1 px-2"
+              onClick={handleClick}
+            >
+              revalidate
+            </button>
+          )}
+      </div>
       <div className="grid grid-cols-2">
         <div>
           <code className=" text-purple-400">getStaticProps</code> started at
         </div>
-        <div className="font-mono">{getStaticPropsStartedAt}</div>
+        <div>{getStaticPropsStartedAt}</div>
         <div>
           <code className=" text-purple-400">getStaticProps</code> stopped for
         </div>
-        <div className="font-mono">{SLEEP_TIME} ms</div>
+        <div>{SLEEP_TIME} ms</div>
         <div>
           <code className=" text-purple-400">getStaticProps</code> finished at
         </div>
-        <div className="font-mono">{getStaticPropsFinishedAt}</div>
+        <div>{getStaticPropsFinishedAt}</div>
         {currentAt && (
           <>
             <div>
               <code className=" text-purple-400">Date.now()</code>
             </div>
-            <div className="font-mono">{currentAt}</div>
+            <div>{currentAt}</div>
           </>
         )}
       </div>
