@@ -50,6 +50,7 @@ export default function Work(
   const [currentAt, setCurrentAt] = useState<string>();
   const [isRevalidating, setIsRevalidating] = useState(false);
   const router = useRouter();
+  const { pathname, asPath } = router;
 
   useEffect(() => {
     setCurrentAt(now());
@@ -74,7 +75,15 @@ export default function Work(
     console.log("status of the revalidate request: ", res.status);
 
     if (res.ok) {
-      router.reload();
+      router.push(
+        {
+          pathname,
+        },
+        asPath,
+        {
+          unstable_skipClientCache: true,
+        },
+      );
     }
   };
 
