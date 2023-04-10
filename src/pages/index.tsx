@@ -9,7 +9,7 @@ export default function Home() {
         <iframe
           className="w-full"
           key={id}
-          src={`http://localhost:3000/works/${id}`}
+          src={`/works/${id}`}
         />
       ))}
 
