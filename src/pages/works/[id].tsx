@@ -1,10 +1,11 @@
+import { SLEEP_TIME, WORK_IDS } from "@/const";
 import dayjs from "dayjs";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { useEffect, useState } from "react";
 
-const now = () => dayjs().format("YYYY-MM-DD HH:mm:ss.SSS Z");
+const now = () => dayjs().format("YYYY-MM-DD HH:mm:ss (ZZ)");
 
-const WORK_IDS = ["foo"];
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const paths = WORK_IDS.map((id) => ({ params: { id } }));
@@ -30,13 +31,14 @@ export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
     };
   }
 
+  await sleep(SLEEP_TIME);
+
   return {
     props: {
       id,
       getStaticPropsStartedAt,
       getStaticPropsFinishedAt: now(),
     },
-    revalidate: 1,
   };
 };
 
@@ -47,27 +49,33 @@ export default function Work(
 
   useEffect(() => {
     setCurrentAt(now());
-    const timeoutId = setTimeout(() => setCurrentAt(now()), 1);
+    const timeoutId = setTimeout(() => setCurrentAt(now()), 1000);
 
     return () => clearTimeout(timeoutId);
   }, [currentAt, setCurrentAt]);
 
   return (
-    <div>
+    <div className="border">
       <h1>Work#{id}</h1>
       <div className="grid grid-cols-2">
         <div>
-          <code>getStaticProps</code> started at
+          <code className=" text-purple-400">getStaticProps</code> started at
         </div>
-        <div>{getStaticPropsStartedAt}</div>
+        <div className="font-mono">{getStaticPropsStartedAt}</div>
         <div>
-          <code>getStaticProps</code> finished at
+          <code className=" text-purple-400">getStaticProps</code> stopped for
         </div>
-        <div>{getStaticPropsFinishedAt}</div>
+        <div className="font-mono">{SLEEP_TIME} ms</div>
+        <div>
+          <code className=" text-purple-400">getStaticProps</code> finished at
+        </div>
+        <div className="font-mono">{getStaticPropsFinishedAt}</div>
         {currentAt && (
           <>
-            <div>current</div>
-            <div>{currentAt}</div>
+            <div>
+              <code className=" text-purple-400">Date.now()</code>
+            </div>
+            <div className="font-mono">{currentAt}</div>
           </>
         )}
       </div>
