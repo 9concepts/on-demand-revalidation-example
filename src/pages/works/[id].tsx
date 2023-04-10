@@ -40,6 +40,7 @@ export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
       getStaticPropsStartedAt,
       getStaticPropsFinishedAt: now(),
     },
+    revalidate: false,
   };
 };
 
@@ -98,15 +99,15 @@ export default function Work(
       </div>
       <div className="grid grid-cols-2">
         <div>
-          <code className=" text-purple-400">getStaticProps</code> started at
+          Build started at
         </div>
         <div>{getStaticPropsStartedAt}</div>
         <div>
-          <code className=" text-purple-400">getStaticProps</code> stopped for
+          Build stopped for
         </div>
         <div>{SLEEP_TIME} ms</div>
         <div>
-          <code className=" text-purple-400">getStaticProps</code> finished at
+          Build finished at
         </div>
         <div>{getStaticPropsFinishedAt}</div>
         {currentAt && (
