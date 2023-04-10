@@ -60,6 +60,7 @@ export default function Work(
   }, [currentAt, setCurrentAt]);
 
   const handleClick = async () => {
+    console.log("revalidate button clicked at", now());
     setIsRevalidating(true);
     const res = await fetch(
       "/api/revalidate",
