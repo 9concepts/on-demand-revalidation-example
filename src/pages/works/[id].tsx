@@ -4,7 +4,8 @@ import { GetStaticPaths, GetStaticProps } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
-const format = (timestamp: number) => dayjs(timestamp).format("HH:mm:ss (ZZ)");
+const format = (timestamp: number) =>
+  dayjs(timestamp).format("YYYY/MM/DD HH:mm:ss (ZZ)");
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
